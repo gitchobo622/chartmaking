@@ -33,10 +33,11 @@
 
                 const reg_date_obj = []; //x축
                 const temp_obj = []; //y축
+                console.log(res.temp[0]);
 
                 for (let i = 0; i < res.temp.length; ++i) {
-                    reg_date_obj.push(resData.reg_date[i]) // reg_date_obj에다가 res.reg_date[i]값을 반복적으로 넣는다.
-                    temp_obj.push(resData.temp[i])
+                    reg_date_obj.push(res.reg_date[i]); // reg_date_obj에다가 res.reg_date[i]값을 반복적으로 넣는다.
+                    temp_obj.push(res.temp[i]);
                 }
 
                 const data = {
