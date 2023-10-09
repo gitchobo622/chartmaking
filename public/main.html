@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차트테스트</title>     
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+        <h2>서버에서 차트 버튼으로 그리기</h2>
+    </br>
+        <div>
+            <canvas id="myChart" width="400px" height="320px"></canvas>
+        </div>
+        <div>
+          <button id="chartdatafromdb">차트그리기</button>
+        </div>
+          
+<script>
+    const btn = document.querySelector('#chartdatafromdb')
+
+    btn.addEventListener('click', ()=>{
+      fetch('/chartdatafromdb', {
+            method: 'post',
+            headers: { 'content-type': 'application/json' }
+        })
+        .then(res => res.json())
+            .then((res) => {
+                if (res.result != 'ok') {
+                    console.log('Result is not ok');
+                    return;
+                }
+
+                const reg_date_obj = []; //x축
+                const temp_obj = []; //y축
+
+                for (let i = 0; i < res.temp.length; ++i) {
+                    reg_date_obj.push(resData.reg_date[i]) // reg_date_obj에다가 res.reg_date[i]값을 반복적으로 넣는다.
+                    temp_obj.push(resData.temp[i])
+                }
+
+                const data = {
+                    labels: reg_date_obj,
+                    datasets: [{
+                        label: '온도',
+                        borderColor: 'rgb(255,99,132)',
+                        data: temp_obj
+                    }]
+                };
+
+                const config = {
+                    type: 'line',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                };
+                 const myChart = new Chart(document.querySelector('#myChart'), config);
+
+    });
+  });
+</script>
+
+
+</body>
+</html>
