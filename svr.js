@@ -25,8 +25,59 @@ const pool = mysql.createPool({
         res.sendFile(__dirname+'/public/main.html')
     })
     app.get('/main2', (req, res)=>{ 
-        res.sendFile(__dirname+'/public/main2.html')
+        res.sendFile(__dirname+'/public/selectchart.html');
     })
+
+    app.get('/main3', (req, res)=>{ 
+        res.sendFile(__dirname+'/public/employee_chart.html');
+    })
+   //-----------------------------------------------------------
+
+
+    app.post('/employee', (req, res) => {
+        console.log('chartdatafromdb 호출됨');
+        
+        pool.getConnection((err, conn) => {
+            const event = req.body.salary1;
+            const resData = {
+                result: 'error',
+                emp_no: [],
+                salary: []
+            };
+    
+            if (err) {
+                conn.release();
+                console.log('MySQL 커넥션 에러 발생');
+                res.json(resData);
+                return;
+            }
+    
+            const exec = conn.query('SELECT `emp_no`, `salary` FROM `new`.`employees` where `salary` >= ? ORDER BY `salary` ASC', [event], (err, rows) => {
+                if (err) {
+                    console.log('MySQL 쿼리 에러');
+                    res.status(500).json({ result: 'error' });
+                    res.json(resData);
+                    return;
+                }
+    
+                if (rows[0]) {
+                    resData.result = 'ok';
+                    rows.forEach((value) => {
+                        resData.emp_no.push(value.emp_no);
+                        resData.salary.push(value.salary);
+                    });
+                }
+    
+                res.json(resData);
+                conn.release(); // 커넥션 해제는 응답을 보낸 후에 처리해야 합니다.
+            });
+        });
+    });
+
+
+
+
+    //-----------------------------------------------------------
 
 
     app.post('/chartdatafromdb', (req, res) => {
@@ -68,6 +119,9 @@ const pool = mysql.createPool({
         });
     });
 
+
+
+       //-----------------------------------------------------------
 
 
     app.post('/chartdatafromdbwithid', (req, res) => {

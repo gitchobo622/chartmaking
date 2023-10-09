@@ -17,10 +17,12 @@
         </div>
           
 <script>
+    let myChart = null;
+
     const btn = document.querySelector('#chartdatafromdb')
 
     btn.addEventListener('click', ()=>{
-      fetch('/chartdatafromdb', {
+      fetch('/employee', {
             method: 'post',
             headers: { 'content-type': 'application/json' }
         })
@@ -57,7 +59,11 @@
                         maintainAspectRatio: false
                     }
                 };
-                 const myChart = new Chart(document.querySelector('#myChart'), config);
+
+                    if (myChart !== null){
+                        myChart.destroy();
+                    }
+                 myChart = new Chart(document.querySelector('#myChart'), config);
 
     });
   });

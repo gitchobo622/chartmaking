@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차트테스트</title>     
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+        <h2>서버에서 차트 버튼으로 그리기</h2>
+        <div>
+            <canvas id="myChart" width="400px" height="320px"></canvas>
+        </div>
+        <form id="employee_form" onsubmit="chartDataFromDB(event)"> 
+            <label>직원들 분류</label>
+            <input id="salary1" type="text" placeholder="셀러리">
+            <button>차트 그리기</button></input>
+        </form>        
+    </body>
+    </html>
+<script>   
+        let myChart = null;
+
+        function chartDataFromDB(event) {
+            event.preventDefault(); // 폼 제출 동작을 중지시킵니다.
+            console.log([window.myChart]);
+            
+            if (myChart) {
+                myChart.destroy();
+            }
+
+
+            const salary1 = document.querySelector('#salary1').value;
+            console.log(salary1);
+     
+            fetch('/employee', {
+            method: 'post',
+            headers: { 'content-type':'application/json' },
+            body:JSON.stringify({
+               'salary1': salary1
+            })
+        }).then((res)=>res.json())
+        .then((res)=> {
+            if(res.result != 'ok'){
+                console.log('result is not ok')
+                return;
+            }
+            const emp_no_obj = []; //x축
+                const salary_obj = []; //y축
+                console.log(res.salary[0]);
+
+                for (let i = 0; i < res.emp_no.length; ++i) {
+                    emp_no_obj.push(res.emp_no[i]); // reg_date_obj에다가 res.reg_date[i]값을 반복적으로 넣는다.
+                    salary_obj.push(res.salary[i]);
+                }
+
+                const data = {
+                    labels: emp_no_obj,
+                    datasets: [{
+                        label: '직원들분류',
+                        borderColor: 'rgb(255,185,172)',
+                        data: salary_obj
+                    }]
+                };
+   
+                const config = {
+                    type: 'line',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                };
+                myChart = new Chart(document.querySelector('#myChart'), config);
+                }
+        )
+            }
+</script>
